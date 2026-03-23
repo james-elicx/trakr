@@ -5,6 +5,7 @@ import { createTraktClient } from "@/lib/trakt";
 import { fetchTmdbImages } from "@/lib/tmdb";
 import { formatRuntime } from "@/lib/format";
 import { Backdrop } from "@/components/media/backdrop";
+import { proxyImageUrl } from "@/lib/image-proxy";
 import { MediaCard } from "@/components/dashboard/media-card";
 import { CardGrid } from "@/components/dashboard/card-grid";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -285,10 +286,10 @@ export default async function PersonPage({ params }: Props) {
 
 	// Use Trakt images as fallback
 	if (!profileUrl && person.images?.headshot?.[0]) {
-		profileUrl = person.images.headshot[0];
+		profileUrl = proxyImageUrl(person.images.headshot[0]);
 	}
 	if (!backdropUrl && person.images?.fanart?.[0]) {
-		backdropUrl = person.images.fanart[0];
+		backdropUrl = proxyImageUrl(person.images.fanart[0]);
 	}
 
 	const age = person.birthday ? calculateAge(person.birthday, person.death ?? undefined) : null;

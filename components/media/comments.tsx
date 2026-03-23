@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "@/components/ui/link";
+import { proxyImageUrl } from "@/lib/image-proxy";
 
 interface CommentUser {
 	username?: string;
@@ -324,7 +325,7 @@ function CommentCard({
 }) {
 	const timeAgo = formatRelativeTime(comment.created_at);
 	const displayName = comment.user?.name || comment.user?.username || "Anonymous";
-	const avatarUrl = comment.user?.images?.avatar?.full;
+	const avatarUrl = proxyImageUrl(comment.user?.images?.avatar?.full);
 	const initial = displayName[0].toUpperCase();
 	const userSlug = comment.user?.ids?.slug ?? comment.user?.username;
 	const profileHref = userSlug ? `/users/${userSlug}` : undefined;

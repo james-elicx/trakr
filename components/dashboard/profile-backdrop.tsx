@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { getAuthenticatedTraktClient } from "@/lib/trakt-server";
+import { proxyImageUrl } from "@/lib/image-proxy";
 import { ProfileBackdropClient } from "./profile-backdrop-client";
 
 export async function ProfileBackdrop() {
@@ -14,7 +14,7 @@ export async function ProfileBackdrop() {
 
 	type Profile = { vip_cover_image?: string | null };
 	const profile = res.body as unknown as Profile;
-	const coverImage = profile.vip_cover_image;
+	const coverImage = proxyImageUrl(profile.vip_cover_image);
 
 	if (!coverImage) return null;
 

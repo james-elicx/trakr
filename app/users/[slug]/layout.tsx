@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "@/components/ui/link";
 import { createTraktClient } from "@/lib/trakt";
 import { Backdrop } from "@/components/media/backdrop";
+import { proxyImageUrl } from "@/lib/image-proxy";
 import { ProfileTabs } from "./profile-tabs";
 
 type UserProfile = {
@@ -57,8 +58,8 @@ export default async function UserProfileLayout({ params, children }: Props) {
 
 	const user = profileRes.body as unknown as UserProfile;
 	const stats = statsRes.status === 200 ? (statsRes.body as unknown as UserStats) : null;
-	const avatarUrl = user.images?.avatar?.full;
-	const coverImage = user.vip_cover_image;
+	const avatarUrl = proxyImageUrl(user.images?.avatar?.full);
+	const coverImage = proxyImageUrl(user.vip_cover_image);
 	const displayName = user.name || user.username;
 	const joinDate = user.joined_at
 		? new Date(user.joined_at).toLocaleDateString("en-US", { year: "numeric", month: "long" })
