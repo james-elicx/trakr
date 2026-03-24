@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
 			},
 			{
 				protocol: "https",
+				hostname: "media.trakt.tv",
+				pathname: "/images/**",
+			},
+			{
+				protocol: "https",
 				hostname: "secure.gravatar.com",
 				pathname: "/avatar/**",
 			},

@@ -3,6 +3,7 @@ import { ContinueWatching } from "@/components/dashboard/continue-watching";
 import { StartWatching } from "@/components/dashboard/start-watching";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { UpcomingSchedule } from "@/components/dashboard/upcoming-schedule";
+import { FriendsActivity } from "@/components/dashboard/friends-activity";
 import { ProfileBackdrop } from "@/components/dashboard/profile-backdrop";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -50,6 +51,10 @@ export default function DashboardPage() {
 
 				<Suspense fallback={<GridSkeleton rows={2} />}>
 					<RecentActivity />
+				</Suspense>
+
+				<Suspense fallback={<GridSkeleton rows={2} />}>
+					<FriendsActivity />
 				</Suspense>
 			</div>
 		</>

@@ -15,6 +15,7 @@ export interface MediaCardProps {
 	progress?: { aired: number; completed: number };
 	timestamp?: string;
 	variant?: "landscape" | "poster";
+	disableHover?: boolean;
 }
 
 export function MediaCard({
@@ -30,6 +31,7 @@ export function MediaCard({
 	progress,
 	timestamp,
 	variant = "landscape",
+	disableHover = false,
 }: MediaCardProps) {
 	const ratingPercent = rating != null ? Math.round(rating * 10) : null;
 	const isPoster = variant === "poster";
@@ -45,7 +47,7 @@ export function MediaCard({
 							src={imageUrl}
 							alt={title}
 							fill
-							className="object-cover transition-transform duration-300 group-hover:scale-105"
+							className={`object-cover ${disableHover ? "" : "transition-transform duration-300 group-hover:scale-105"}`}
 							sizes={
 								isPoster
 									? "(max-width: 640px) 33vw, 14vw"
@@ -109,7 +111,7 @@ export function MediaCard({
 				)}
 
 				{/* Hover actions */}
-				<CardActions mediaType={mediaType} ids={ids} userRating={userRating} />
+				{!disableHover && <CardActions mediaType={mediaType} ids={ids} userRating={userRating} />}
 			</div>
 		</Link>
 	);
