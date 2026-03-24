@@ -1,6 +1,6 @@
 import { getAuthenticatedTraktClient } from "@/lib/trakt-server";
 import { proxyImageUrl } from "@/lib/image-proxy";
-import { ProfileBackdropClient } from "./profile-backdrop-client";
+import { Backdrop } from "@/components/media/backdrop";
 
 export async function ProfileBackdrop() {
 	const client = await getAuthenticatedTraktClient();
@@ -18,5 +18,5 @@ export async function ProfileBackdrop() {
 
 	if (!coverImage) return null;
 
-	return <ProfileBackdropClient src={coverImage} />;
+	return <Backdrop src={coverImage} alt="Profile backdrop" />;
 }
