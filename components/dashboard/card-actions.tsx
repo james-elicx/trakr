@@ -31,7 +31,7 @@ export function CardActions({
 	const watchedType = mediaType === "shows" ? "episodes" : mediaType;
 
 	return (
-		<div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+		<div className="absolute inset-0 z-[2] flex flex-col items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
 			{/* Dim overlay */}
 			<div className="absolute inset-0 bg-black/60" />
 
