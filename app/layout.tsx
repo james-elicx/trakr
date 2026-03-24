@@ -8,6 +8,7 @@ import "./globals.css";
 const tasaOrbiter = TASA_Orbiter({
 	variable: "--font-tasa-orbiter",
 	subsets: ["latin"],
+	axes: ["wght"],
 });
 
 const geistMono = Geist_Mono({
