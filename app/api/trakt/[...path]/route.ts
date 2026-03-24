@@ -37,7 +37,7 @@ async function proxyToTrakt(req: NextRequest) {
 			Authorization: `Bearer ${accessToken}`,
 			"trakt-api-version": "2",
 			"trakt-api-key": process.env.TRAKT_CLIENT_ID!,
-			"user-agent": "trakr-client/1.0",
+			"user-agent": "pletra/1.0",
 		},
 		body,
 	});

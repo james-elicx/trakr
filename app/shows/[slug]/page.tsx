@@ -7,6 +7,7 @@ import { getAuthenticatedTraktClient } from "@/lib/trakt-server";
 import type { TraktRating } from "@/lib/types";
 import { formatRuntime } from "@/lib/format";
 import { getShowData } from "@/lib/metadata";
+import { fetchTmdbPersonImage } from "@/lib/tmdb";
 import { Backdrop } from "@/components/media/backdrop";
 import { RatingDisplay } from "@/components/media/rating-display";
 import { RatingInput } from "@/components/media/rating-input";
@@ -28,8 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const title = show.year ? `${show.title} (${show.year})` : show.title;
 
 	return {
-		title: `${title} — Trakr`,
-		description: show.overview?.slice(0, 200) ?? `Track ${show.title} on Trakr`,
+		title: `${title} — Pletra`,
+		description: show.overview?.slice(0, 200) ?? `Track ${show.title} on Pletra`,
 		openGraph: {
 			title,
 			description: show.overview?.slice(0, 200),
@@ -60,7 +61,7 @@ async function Seasons({ slug, tmdbId }: { slug: string; tmdbId?: number }) {
 			try {
 				const r = await fetch(
 					`https://api.themoviedb.org/3/tv/${tmdbId}/season/${s.number}?api_key=${process.env.TMDB_API_KEY}`,
-					{ next: { revalidate: 86400 } },
+					{ next: { revalidate: 604800 } },
 				);
 				if (!r.ok) return null;
 				const data = await r.json<{ poster_path?: string }>();
@@ -134,21 +135,9 @@ async function ShowCast({ slug }: { slug: string }) {
 	if (cast.length === 0) return null;
 
 	const photos = await Promise.all(
-		cast.map(async (m) => {
-			const tmdbId = m.person?.ids?.tmdb;
-			if (!tmdbId) return null;
-			try {
-				const r = await fetch(
-					`https://api.themoviedb.org/3/person/${tmdbId}?api_key=${process.env.TMDB_API_KEY}`,
-					{ next: { revalidate: 86400 } },
-				);
-				if (!r.ok) return null;
-				const data = await r.json<{ profile_path?: string }>();
-				return data.profile_path ? `https://image.tmdb.org/t/p/w185${data.profile_path}` : null;
-			} catch {
-				return null;
-			}
-		}),
+		cast.map((m) =>
+			m.person?.ids?.tmdb ? fetchTmdbPersonImage(m.person.ids.tmdb) : Promise.resolve(null),
+		),
 	);
 
 	return (

@@ -56,7 +56,7 @@ export const getPersonData = cache(async (slug: string) => {
 		try {
 			const r = await fetch(
 				`https://api.themoviedb.org/3/person/${person.ids.tmdb}?api_key=${process.env.TMDB_API_KEY}`,
-				{ next: { revalidate: 86400 } },
+				{ next: { revalidate: 604800 } },
 			);
 			if (r.ok) {
 				const data = await r.json<{ profile_path?: string }>();

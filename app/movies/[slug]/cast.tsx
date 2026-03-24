@@ -1,22 +1,7 @@
 import Image from "next/image";
 import Link from "@/components/ui/link";
 import { createTraktClient } from "@/lib/trakt";
-
-const TMDB_IMAGE = "https://image.tmdb.org/t/p";
-
-async function fetchPersonImage(tmdbId: number): Promise<string | null> {
-	try {
-		const res = await fetch(
-			`https://api.themoviedb.org/3/person/${tmdbId}?api_key=${process.env.TMDB_API_KEY}`,
-			{ next: { revalidate: 86400 } },
-		);
-		if (!res.ok) return null;
-		const data = await res.json<{ profile_path?: string }>();
-		return data.profile_path ? `${TMDB_IMAGE}/w185${data.profile_path}` : null;
-	} catch {
-		return null;
-	}
-}
+import { fetchTmdbPersonImage } from "@/lib/tmdb";
 
 export async function CastSection({ slug }: { slug: string }) {
 	const client = createTraktClient();
@@ -35,7 +20,7 @@ export async function CastSection({ slug }: { slug: string }) {
 
 	const photos = await Promise.all(
 		cast.map((m) =>
-			m.person?.ids?.tmdb ? fetchPersonImage(m.person.ids.tmdb) : Promise.resolve(null),
+			m.person?.ids?.tmdb ? fetchTmdbPersonImage(m.person.ids.tmdb) : Promise.resolve(null),
 		),
 	);
 

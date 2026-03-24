@@ -73,7 +73,7 @@ export default async function SeasonPage({ params }: Props) {
 			try {
 				const r = await fetch(
 					`https://api.themoviedb.org/3/tv/${show.ids.tmdb}/season/${seasonNumber}/episode/${ep.number}?api_key=${process.env.TMDB_API_KEY}`,
-					{ next: { revalidate: 86400 } },
+					{ next: { revalidate: 604800 } },
 				);
 				if (!r.ok) return null;
 				const data = await r.json<{ still_path?: string }>();

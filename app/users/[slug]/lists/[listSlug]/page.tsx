@@ -103,7 +103,7 @@ export default async function ListDetailPage({ params, searchParams }: Props) {
 				"Content-Type": "application/json",
 				"trakt-api-version": "2",
 				"trakt-api-key": process.env.TRAKT_CLIENT_ID!,
-				"user-agent": "trakr-client/1.0",
+				"user-agent": "pletra/1.0",
 			},
 			next: { revalidate: 300 },
 		},
@@ -136,7 +136,7 @@ export default async function ListDetailPage({ params, searchParams }: Props) {
 				try {
 					const res = await fetch(
 						`https://api.themoviedb.org/3/person/${tmdbId}?api_key=${process.env.TMDB_API_KEY}`,
-						{ next: { revalidate: 86400 } },
+						{ next: { revalidate: 604800 } },
 					);
 					if (!res.ok) return { poster: null, backdrop: null };
 					const data = await res.json<{ profile_path?: string }>();

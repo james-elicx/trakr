@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 	try {
 		const res = await fetch(url, {
 			headers: {
-				"User-Agent": "trakr-client/1.0",
+				"User-Agent": "pletra/1.0",
 				Accept: "image/*",
 			},
 		});

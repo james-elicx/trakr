@@ -11,7 +11,7 @@ export function createTraktClient(accessToken?: string) {
 			if (accessToken) {
 				headers.set("Authorization", `Bearer ${accessToken}`);
 			}
-			headers.set("user-agent", "trakr-client/1.0");
+			headers.set("user-agent", "pletra/1.0");
 			return fetch(url, { ...init, headers });
 		},
 	});

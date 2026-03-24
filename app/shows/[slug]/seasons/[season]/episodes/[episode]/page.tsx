@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "@/components/ui/link";
 import { createTraktClient } from "@/lib/trakt";
 import { getAuthenticatedTraktClient } from "@/lib/trakt-server";
-import { fetchTmdbImages, fetchTmdbEpisodeImages } from "@/lib/tmdb";
+import { fetchTmdbImages, fetchTmdbEpisodeImages, fetchTmdbPersonImage } from "@/lib/tmdb";
 import type { ShowSummary, EpisodeSummary } from "@/lib/types";
 import { formatRuntime } from "@/lib/format";
 import { getShowData, getEpisodeData } from "@/lib/metadata";
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 		: `${epLabel} — ${showData.show.title}`;
 
 	return {
-		title: `${title} — Trakr`,
+		title: `${title} — Pletra`,
 		description: ep.overview?.slice(0, 200) ?? `${showData.show.title} ${epLabel}`,
 		openGraph: {
 			title,
@@ -74,21 +74,9 @@ async function EpisodeCast({
 	if (cast.length === 0) return null;
 
 	const photos = await Promise.all(
-		cast.map(async (m) => {
-			const tmdbId = m.person?.ids?.tmdb;
-			if (!tmdbId) return null;
-			try {
-				const r = await fetch(
-					`https://api.themoviedb.org/3/person/${tmdbId}?api_key=${process.env.TMDB_API_KEY}`,
-					{ next: { revalidate: 86400 } },
-				);
-				if (!r.ok) return null;
-				const data = await r.json<{ profile_path?: string }>();
-				return data.profile_path ? `https://image.tmdb.org/t/p/w185${data.profile_path}` : null;
-			} catch {
-				return null;
-			}
-		}),
+		cast.map((m) =>
+			m.person?.ids?.tmdb ? fetchTmdbPersonImage(m.person.ids.tmdb) : Promise.resolve(null),
+		),
 	);
 
 	return (

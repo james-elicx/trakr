@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 			"Content-Type": "application/json",
 			"trakt-api-version": "2",
 			"trakt-api-key": process.env.TRAKT_CLIENT_ID!,
-			"user-agent": "trakr-client/1.0",
+			"user-agent": "pletra/1.0",
 		},
 	});
 
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 					const tmdbType = mediaType === "show" ? "tv" : mediaType;
 					const tmdbRes = await fetch(
 						`https://api.themoviedb.org/3/${tmdbType}/${tmdbId}?api_key=${process.env.TMDB_API_KEY}`,
-						{ next: { revalidate: 86400 } },
+						{ next: { revalidate: 604800 } },
 					);
 					if (tmdbRes.ok) {
 						const tmdbData = await tmdbRes.json<{ poster_path?: string }>();

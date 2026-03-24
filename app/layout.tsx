@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "Trakt Dashboard",
+	title: "Pletra",
 	description: "Track your movies and shows",
 };
 

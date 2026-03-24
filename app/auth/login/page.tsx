@@ -51,9 +51,9 @@ export default function LoginPage() {
 		<div className="flex min-h-screen items-center justify-center">
 			<div className="w-full max-w-sm space-y-8 px-4">
 				<div className="text-center">
-					<h1 className="text-3xl font-bold tracking-tight text-white">Trakt</h1>
+					<h1 className="text-3xl font-bold tracking-tight text-white">Pletra</h1>
 					<p className="mt-2 text-sm text-zinc-400">
-						Sign in to access your watchlist and activity
+						Sign in to access your Trakt watchlist and activity
 					</p>
 				</div>
 
@@ -75,6 +75,12 @@ export default function LoginPage() {
 
 					{error && <p className="text-center text-sm text-red-400">{error}</p>}
 				</div>
+
+				<p className="text-center text-[11px] leading-relaxed text-zinc-600">
+					Your Trakt credentials are only stored in an encrypted session cookie.
+					<br />
+					No passwords or tokens are saved in any database.
+				</p>
 			</div>
 		</div>
 	);

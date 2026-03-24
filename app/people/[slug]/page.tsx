@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 	const { person, image } = data;
 	return {
-		title: `${person.name} — Trakr`,
-		description: person.biography?.slice(0, 200) ?? `${person.name} on Trakr`,
+		title: `${person.name} — Pletra`,
+		description: person.biography?.slice(0, 200) ?? `${person.name} on Pletra`,
 		openGraph: {
 			title: person.name,
 			description: person.biography?.slice(0, 200),
@@ -40,7 +40,7 @@ async function fetchPersonDetails(tmdbId: number) {
 	try {
 		const res = await fetch(
 			`https://api.themoviedb.org/3/person/${tmdbId}?api_key=${process.env.TMDB_API_KEY}`,
-			{ next: { revalidate: 86400 } },
+			{ next: { revalidate: 604800 } },
 		);
 		if (!res.ok) return null;
 		const data = await res.json<{ profile_path?: string }>();
@@ -58,7 +58,7 @@ async function fetchPersonBackdrop(tmdbId: number): Promise<string | null> {
 	try {
 		const res = await fetch(
 			`https://api.themoviedb.org/3/person/${tmdbId}/tagged_images?api_key=${process.env.TMDB_API_KEY}&page=1`,
-			{ next: { revalidate: 86400 } },
+			{ next: { revalidate: 604800 } },
 		);
 		if (res.ok) {
 			const data = await res.json<{ results: TaggedImage[] }>();
@@ -82,7 +82,7 @@ async function fetchPersonBackdrop(tmdbId: number): Promise<string | null> {
 	try {
 		const res = await fetch(
 			`https://api.themoviedb.org/3/person/${tmdbId}/combined_credits?api_key=${process.env.TMDB_API_KEY}`,
-			{ next: { revalidate: 86400 } },
+			{ next: { revalidate: 604800 } },
 		);
 		if (res.ok) {
 			const data = await res.json<{ cast: Credit[] }>();
