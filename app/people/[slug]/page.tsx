@@ -1,9 +1,11 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { ProxiedImage as Image } from "@/components/ui/proxied-image";
 import Link from "@/components/ui/link";
 import { createTraktClient } from "@/lib/trakt";
 import { fetchTmdbImages } from "@/lib/tmdb";
 import { formatRuntime } from "@/lib/format";
+import { getPersonData } from "@/lib/metadata";
 import { Backdrop } from "@/components/media/backdrop";
 import { proxyImageUrl } from "@/lib/image-proxy";
 import { MediaCard } from "@/components/dashboard/media-card";
@@ -13,6 +15,23 @@ import { ExpandableText } from "@/components/ui/expandable-text";
 
 interface Props {
 	params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+	const { slug } = await params;
+	const data = await getPersonData(slug);
+	if (!data) return { title: "Person not found" };
+
+	const { person, image } = data;
+	return {
+		title: `${person.name} — Trakr`,
+		description: person.biography?.slice(0, 200) ?? `${person.name} on Trakr`,
+		openGraph: {
+			title: person.name,
+			description: person.biography?.slice(0, 200),
+			...(image ? { images: [{ url: image, width: 500, height: 750 }] } : {}),
+		},
+	};
 }
 
 const TMDB_IMAGE = "https://image.tmdb.org/t/p";

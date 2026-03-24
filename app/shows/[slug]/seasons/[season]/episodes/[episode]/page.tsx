@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "@/components/ui/link";
 import { createTraktClient } from "@/lib/trakt";
@@ -6,6 +7,7 @@ import { getAuthenticatedTraktClient } from "@/lib/trakt-server";
 import { fetchTmdbImages, fetchTmdbEpisodeImages } from "@/lib/tmdb";
 import type { ShowSummary, EpisodeSummary } from "@/lib/types";
 import { formatRuntime } from "@/lib/format";
+import { getShowData, getEpisodeData } from "@/lib/metadata";
 import { Backdrop } from "@/components/media/backdrop";
 import { RatingDisplay } from "@/components/media/rating-display";
 import { RatingInput } from "@/components/media/rating-input";
@@ -15,6 +17,36 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
 	params: Promise<{ slug: string; season: string; episode: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+	const { slug, season, episode } = await params;
+	const seasonNum = parseInt(season, 10);
+	const episodeNum = parseInt(episode, 10);
+
+	const [showData, ep] = await Promise.all([
+		getShowData(slug),
+		getEpisodeData(slug, seasonNum, episodeNum),
+	]);
+
+	if (!showData || !ep) return { title: "Episode not found" };
+
+	const epLabel = `S${String(seasonNum).padStart(2, "0")}E${String(episodeNum).padStart(2, "0")}`;
+	const title = ep.title
+		? `${epLabel} ${ep.title} — ${showData.show.title}`
+		: `${epLabel} — ${showData.show.title}`;
+
+	return {
+		title: `${title} — Trakr`,
+		description: ep.overview?.slice(0, 200) ?? `${showData.show.title} ${epLabel}`,
+		openGraph: {
+			title,
+			description: ep.overview?.slice(0, 200),
+			...(showData.images.backdrop
+				? { images: [{ url: showData.images.backdrop, width: 1280, height: 720 }] }
+				: {}),
+		},
+	};
 }
 
 async function EpisodeCast({

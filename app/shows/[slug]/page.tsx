@@ -1,11 +1,12 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "@/components/ui/link";
 import { createTraktClient } from "@/lib/trakt";
 import { getAuthenticatedTraktClient } from "@/lib/trakt-server";
-import { fetchTmdbImages } from "@/lib/tmdb";
-import type { ShowSummary, TraktRating } from "@/lib/types";
+import type { TraktRating } from "@/lib/types";
 import { formatRuntime } from "@/lib/format";
+import { getShowData } from "@/lib/metadata";
 import { Backdrop } from "@/components/media/backdrop";
 import { RatingDisplay } from "@/components/media/rating-display";
 import { RatingInput } from "@/components/media/rating-input";
@@ -16,6 +17,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
 	params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+	const { slug } = await params;
+	const data = await getShowData(slug);
+	if (!data) return { title: "Show not found" };
+
+	const { show, images } = data;
+	const title = show.year ? `${show.title} (${show.year})` : show.title;
+
+	return {
+		title: `${title} — Trakr`,
+		description: show.overview?.slice(0, 200) ?? `Track ${show.title} on Trakr`,
+		openGraph: {
+			title,
+			description: show.overview?.slice(0, 200),
+			...(images.backdrop ? { images: [{ url: images.backdrop, width: 1280, height: 720 }] } : {}),
+		},
+	};
 }
 
 async function Seasons({ slug, tmdbId }: { slug: string; tmdbId?: number }) {
@@ -175,12 +195,12 @@ export default async function ShowPage({ params }: Props) {
 	const { slug } = await params;
 	const client = createTraktClient();
 
-	const [summaryRes, ratingsRes] = await Promise.all([
-		client.shows.summary({ params: { id: slug }, query: { extended: "full" } }),
+	const [showData, ratingsRes] = await Promise.all([
+		getShowData(slug),
 		client.shows.ratings({ params: { id: slug } }),
 	]);
 
-	if (summaryRes.status !== 200) {
+	if (!showData) {
 		return (
 			<div className="flex min-h-[50vh] items-center justify-center text-muted">
 				Show not found.
@@ -188,11 +208,8 @@ export default async function ShowPage({ params }: Props) {
 		);
 	}
 
-	const show = summaryRes.body as unknown as ShowSummary;
+	const { show, images } = showData;
 	const ratings = ratingsRes.status === 200 ? (ratingsRes.body as unknown as TraktRating) : null;
-	const images = show.ids?.tmdb
-		? await fetchTmdbImages(show.ids.tmdb, "tv")
-		: { poster: null, backdrop: null };
 
 	let userRating: number | undefined;
 	let showProgress: { completed: number; aired: number } | null = null;

@@ -1,11 +1,12 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "@/components/ui/link";
 import { createTraktClient } from "@/lib/trakt";
 import { getAuthenticatedTraktClient } from "@/lib/trakt-server";
-import { fetchTmdbImages } from "@/lib/tmdb";
-import type { MovieSummary, TraktRating } from "@/lib/types";
+import type { TraktRating } from "@/lib/types";
 import { formatRuntime } from "@/lib/format";
+import { getMovieData } from "@/lib/metadata";
 import { Backdrop } from "@/components/media/backdrop";
 import { RatingDisplay } from "@/components/media/rating-display";
 import { RatingInput } from "@/components/media/rating-input";
@@ -20,21 +21,35 @@ interface Props {
 	params: Promise<{ slug: string }>;
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+	const { slug } = await params;
+	const data = await getMovieData(slug);
+	if (!data) return { title: "Movie not found" };
+
+	const { movie, images } = data;
+	const title = movie.year ? `${movie.title} (${movie.year})` : movie.title;
+
+	return {
+		title: `${title} — Trakr`,
+		description: movie.overview?.slice(0, 200) ?? `Track ${movie.title} on Trakr`,
+		openGraph: {
+			title,
+			description: movie.overview?.slice(0, 200),
+			...(images.backdrop ? { images: [{ url: images.backdrop, width: 1280, height: 720 }] } : {}),
+		},
+	};
+}
+
 export default async function MoviePage({ params }: Props) {
 	const { slug } = await params;
 	const client = createTraktClient();
 
-	const [summaryRes, ratingsRes] = await Promise.all([
-		client.movies.summary({
-			params: { id: slug },
-			query: { extended: "full" },
-		}),
-		client.movies.ratings({
-			params: { id: slug },
-		}),
+	const [movieData, ratingsRes] = await Promise.all([
+		getMovieData(slug),
+		client.movies.ratings({ params: { id: slug } }),
 	]);
 
-	if (summaryRes.status !== 200) {
+	if (!movieData) {
 		return (
 			<div className="flex min-h-[50vh] items-center justify-center text-muted">
 				Movie not found.
@@ -42,12 +57,8 @@ export default async function MoviePage({ params }: Props) {
 		);
 	}
 
-	const movie = summaryRes.body as unknown as MovieSummary;
+	const { movie, images } = movieData;
 	const ratings = ratingsRes.status === 200 ? (ratingsRes.body as unknown as TraktRating) : null;
-
-	const images = movie.ids?.tmdb
-		? await fetchTmdbImages(movie.ids.tmdb, "movie")
-		: { poster: null, backdrop: null };
 
 	let userRating: number | undefined;
 	let isWatched = false;
