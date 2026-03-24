@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "@/components/ui/link";
+import { CardImage } from "./card-image";
 import { CardActions } from "./card-actions";
 
 export interface MediaCardProps {
@@ -41,20 +41,16 @@ export function MediaCard({
 		<Link href={href} className="group relative overflow-hidden rounded-lg bg-zinc-900">
 			<div className={`relative ${isPoster ? "aspect-[2/3]" : "aspect-[16/10]"}`}>
 				{imageUrl ? (
-					<>
-						<div className="skeleton absolute inset-0" />
-						<Image
-							src={imageUrl}
-							alt={title}
-							fill
-							className={`z-[1] object-cover ${disableHover ? "" : "transition-transform duration-300 group-hover:scale-105"}`}
-							sizes={
-								isPoster
-									? "(max-width: 640px) 33vw, 14vw"
-									: "(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
-							}
-						/>
-					</>
+					<CardImage
+						src={imageUrl}
+						alt={title}
+						sizes={
+							isPoster
+								? "(max-width: 640px) 33vw, 14vw"
+								: "(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
+						}
+						disableHover={disableHover}
+					/>
 				) : (
 					<div className="flex h-full items-center justify-center bg-zinc-800/80 text-muted">
 						<span className="text-xl">🎬</span>
@@ -62,7 +58,7 @@ export function MediaCard({
 				)}
 
 				{/* Ratings - top right stack */}
-				<div className="absolute top-1.5 right-1.5 z-[2] flex flex-col items-end gap-1">
+				<div className="absolute top-1.5 right-1.5 flex flex-col items-end gap-1">
 					{ratingPercent != null && (
 						<div
 							className={`rounded px-1.5 py-0.5 text-[10px] font-bold leading-none ${
@@ -85,14 +81,14 @@ export function MediaCard({
 
 				{/* Timestamp - top left */}
 				{timestamp && (
-					<div className="absolute top-1.5 left-1.5 z-[2] rounded bg-black/60 px-1.5 py-0.5 text-[10px] leading-none text-zinc-300 backdrop-blur-sm">
+					<div className="absolute top-1.5 left-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] leading-none text-zinc-300 backdrop-blur-sm">
 						{timestamp}
 					</div>
 				)}
 
 				{/* Title overlay */}
 				<div
-					className={`absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black via-black/70 to-transparent px-2.5 pb-2 ${isPoster ? "pt-16" : "pt-10"}`}
+					className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent px-2.5 pb-2 ${isPoster ? "pt-16" : "pt-10"}`}
 				>
 					<p className="truncate text-xs font-semibold leading-tight text-white">{title}</p>
 					{subtitle && (
@@ -102,7 +98,7 @@ export function MediaCard({
 
 				{/* Progress bar */}
 				{progress && progress.aired > 0 && (
-					<div className="absolute inset-x-0 bottom-0 z-[2] h-[3px] bg-zinc-800/60">
+					<div className="absolute inset-x-0 bottom-0 h-[3px] bg-zinc-800/60">
 						<div
 							className="h-full bg-accent"
 							style={{ width: `${(progress.completed / progress.aired) * 100}%` }}
