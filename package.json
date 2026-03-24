@@ -36,7 +36,7 @@
 		"react-server-dom-webpack": "^19.2.4",
 		"tailwindcss": "^4",
 		"typescript": "^5",
-		"vinext": "^0.0.34",
+		"vinext": "^0.0.35",
 		"vite": "npm:@voidzero-dev/vite-plus-core@^0.1.13",
 		"vite-plus": "latest",
 		"wrangler": "^4.76.0"
