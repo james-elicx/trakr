@@ -1,4 +1,5 @@
-import { getAuthenticatedTraktClient } from "@/lib/trakt-server";
+import { redirect } from "next/navigation";
+import { getAuthenticatedTraktClient, isCurrentUser } from "@/lib/trakt-server";
 import { fetchTmdbImages } from "@/lib/tmdb";
 import { ProgressClient } from "./progress-client";
 
@@ -73,6 +74,13 @@ function getApiSort(sort: string): { sort_by: string; sort_how: string } {
 
 export default async function ProgressPage({ params, searchParams }: Props) {
 	const { slug } = await params;
+
+	// Progress is only available for the current user
+	const ownProfile = await isCurrentUser(slug);
+	if (!ownProfile) {
+		redirect(`/users/${slug}`);
+	}
+
 	const sp = await searchParams;
 	const activeSort = sp.sort ?? "recent";
 	const activeFilter = sp.filter ?? "all";
