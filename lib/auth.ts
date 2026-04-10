@@ -36,7 +36,12 @@ export const auth = betterAuth({
 					getToken: async ({ code, redirectURI }) => {
 						const res = await fetch("https://api.trakt.tv/oauth/token", {
 							method: "POST",
-							headers: { "Content-Type": "application/json", "user-agent": "pletra/1.0" },
+							headers: {
+								"trakt-api-version": "2",
+								"trakt-api-key": process.env.TRAKT_CLIENT_ID!,
+								"Content-Type": "application/json",
+								"user-agent": "pletra/1.0",
+							},
 							body: JSON.stringify({
 								code,
 								client_id: process.env.TRAKT_CLIENT_ID!,
